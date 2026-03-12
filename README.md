@@ -1,8 +1,8 @@
 # Geo Data Connector — Skills for AI Coding Assistants
 
-Skills for [Geo Data Connector](https://www.smartdatahub.io/gdc), the Snowflake Native App for discovering and ingesting geospatial data from OGC web services into Snowflake tables.
+Skills for <a href="https://www.smartdatahub.io/gdc" target="_blank">Geo Data Connector</a>, the Snowflake Native App for discovering and ingesting geospatial data from OGC web services into Snowflake tables.
 
-These skills work with [Snowflake Cortex Code](https://docs.snowflake.com/en/user-guide/cortex-code/cortex-code) and [Claude Code](https://docs.anthropic.com/en/docs/claude-code).
+These skills work with <a href="https://docs.snowflake.com/en/user-guide/cortex-code/cortex-code" target="_blank">Snowflake Cortex Code</a> and <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank">Claude Code</a>.
 
 ## Prerequisites
 
@@ -37,7 +37,7 @@ To track upcoming changes before they reach the stable release:
 npx skills add https://github.com/smartdatahub/gdc-snowflake-skills/tree/preview/geo-data-connector
 ```
 
-Preview skills match the latest test deployment and may reference procedures or features not yet available in the current Marketplace release.
+Preview skills may reference procedures or features not yet available in the current Marketplace release.
 
 ## Available Skills
 

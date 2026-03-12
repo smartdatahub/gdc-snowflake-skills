@@ -73,8 +73,8 @@ Role: APP_USER
 | `get_by_source` | `source_uri`, `source_type`, `source_dataset_name` | Find a task by its data source |
 | `runs` | `name` | Get ingestion run history for a task |
 | `table_info` | `name` | Describe the ingested table (columns, row count, sample) |
-| `metadata` | `name` | Get raster metadata for WMS/WMTS/WCS tasks |
-| `stage_file_info` | `name` | Get staged file info for WMS/WMTS tasks |
+| `metadata` | `name` | Get raster metadata (WMS, WMTS, WCS, OGC API Maps, OGC API Coverages) |
+| `stage_file_info` | `name` | Get staged image file info (WMS, WMTS) |
 
 ```sql
 -- Count tasks
@@ -92,7 +92,7 @@ CALL SETUP.GDC_TASK_INFO('table_info', PARSE_JSON('{"name": "INGESTION_abc123def
 
 ## GDC_TASK — Task Lifecycle Management
 
-Role: APP_ADMIN. Requires External Access Integration.
+Role: APP_USER. Requires External Access Integration.
 
 | Action | Parameters | Description |
 |--------|-----------|-------------|
@@ -143,43 +143,51 @@ CALL SETUP.GDC_DISCOVER('navigate', PARSE_JSON('{"url": "https://geo.example.com
 
 All datasets ingested by Geo Data Connector follow a consistent schema. Understanding this schema is essential for writing correct queries.
 
-### Vector Tables (WFS, CSW)
+### Supported Data Source Types
 
-Ingested vector feature tables always contain these system columns alongside the source feature attributes:
+| Type | Sources | Output |
+|------|---------|--------|
+| Vector | WFS, OGC API Features, OGC API Tiles | Feature table with GeoJSON geometry and attributes |
+| Raster/Image | WMS, WMTS, WCS, OGC API Maps, OGC API Coverages | Pixel data table + metadata table |
+| Catalog | CSW, OGC API Records | Discovery and browsing only (not ingestible) |
+
+### Vector Tables (WFS, OGC API Features, OGC API Tiles)
+
+Ingested vector feature tables contain source attributes alongside these system columns:
 
 | Column | Type | Description |
 |--------|------|-------------|
-| `geom_geojson` | STRING | GeoJSON geometry (Point, LineString, Polygon, Multi*). NULL for attribute-only features. |
-| `crs_epsg` | INT | Always 4326 (WGS 84) after ingestion. Coordinates are longitude, latitude in degrees. |
-| `h3_indices` | ARRAY | Pre-computed H3 hexagonal cell indices at fine resolution, covering the feature geometry. |
-| `h3_resolution` | INT | H3 resolution level (0-15) used for `h3_indices`. |
-| `h3_indices_coarse` | ARRAY | Pre-computed H3 cell indices at coarse resolution for regional aggregation. |
-| `h3_resolution_coarse` | INT | H3 resolution level for coarse indices. |
+| `geom_geojson` | STRING | GeoJSON geometry (Point, LineString, Polygon, Multi*) |
+| `h3_indices` | ARRAY | Pre-computed H3 hexagonal cell indices at fine resolution, covering the feature geometry |
+| `h3_resolution` | INT | H3 resolution level used for `h3_indices` (automatically selected based on dataset extent) |
+| `h3_indices_coarse` | ARRAY | Pre-computed H3 cell indices at coarse resolution for regional aggregation |
+| `h3_resolution_coarse` | INT | H3 resolution level for coarse indices |
 
 Source-specific attribute columns (e.g., `ROCK_TYPE`, `AREA_NAME`, `STATUS`) vary by dataset.
 
-**Attribute-only tables:** Some datasets have no geometry (100% null `geom_geojson`). These tables omit `geom_geojson` and `crs_epsg` entirely.
+**Attribute-only tables:** Some datasets have no geometry. These tables omit `geom_geojson` entirely.
 
-### Raster Pixel Tables (WMS, WMTS, WCS)
+### Raster Pixel Tables (WMS, WMTS, WCS, OGC API Maps, OGC API Coverages)
+
+All raster and image sources produce a pixel data table with one row per pixel:
 
 | Column | Type | Description |
 |--------|------|-------------|
-| `pixel_id` | INT | Unique pixel identifier |
+| `pixel_id` | INT | Unique pixel identifier (row * width + col) |
 | `x` | DECIMAL | Pixel center X coordinate in native CRS |
 | `y` | DECIMAL | Pixel center Y coordinate in native CRS |
 | `row` | INT | Pixel row index (0-based from top) |
 | `col` | INT | Pixel column index (0-based from left) |
-| `geom_geojson` | STRING | GeoJSON Point for pixel center |
-| `crs_epsg` | INT | Native CRS EPSG code |
-| `band_1`, `band_2`, ... | DECIMAL | One column per raster band |
+| `geom_geojson` | STRING | GeoJSON Point for pixel center in native CRS coordinates |
+| `band_1`, `band_2`, ... | DECIMAL | Raster band values (one column per band in the source) |
 
-### Raster Metadata Tables
+### Metadata Tables
 
-Named `<table_name>__metadata`. Contains source metadata: `image_title`, `image_description`, `crs_epsg`, bounding box (`bbox_north/south/east/west`), image dimensions (`width`, `height`, `bands`), pixel size, and band names.
+Every raster/image ingestion produces a companion metadata table named `<table_name>__metadata` with image properties including: `source_type`, `crs`, `width`, `height`, `bands`, `band_names`, `band_units`, `band_value_range`, `band_nodata`, `pixel_size_x`, `pixel_size_y`, `pixel_value_type`, `pixel_count`, `file_size`, `file_location`, and bounding box coordinates in both native CRS and WGS84.
 
-### Image Stages (WMS/WMTS only)
+### Image Stages (WMS, WMTS)
 
-Cloud Optimized GeoTIFF files stored at `@<database>.<schema>.<table_name>` Snowflake stage.
+WMS and WMTS ingestions also produce Cloud Optimized GeoTIFF (COG) files in a Snowflake stage. WCS and OGC API Coverages deliver raw raster data and do not produce an image stage.
 
 ---
 
