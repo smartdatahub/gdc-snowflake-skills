@@ -29,6 +29,16 @@ To update:
 /skill add https://github.com/smartdatahub/gdc-snowflake-skills.git
 ```
 
+### Preview Channel
+
+To track upcoming changes before they reach the stable release:
+
+```
+npx skills add https://github.com/smartdatahub/gdc-snowflake-skills/tree/preview/geo-data-connector
+```
+
+Preview skills match the latest test deployment and may reference procedures or features not yet available in the current Marketplace release.
+
 ## Available Skills
 
 | Skill | Description |
