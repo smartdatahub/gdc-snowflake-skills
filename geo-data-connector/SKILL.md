@@ -1,6 +1,6 @@
 ---
 name: geo-data-connector
-description: SQL procedures, ingested data schema, and geospatial query patterns for Geo Data Connector (Snowflake Native App)
+description: SQL procedures, ingested data schema, and geospatial query patterns for Geo Data Connector (GDC) — Snowflake Native App. Use when questions mention GDC, Geo Data Connector, or GDC_CONFIG, GDC_TASK, GDC_CONNECTION, GDC_DISCOVER, GDC_TASK_INFO procedures.
 tools:
   - snowflake_execute
   - snowflake_sql_execute
