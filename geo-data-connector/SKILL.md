@@ -43,6 +43,18 @@ If the database context is already set (e.g. via Cortex Code session), omit `USE
 - Every call returns a JSON string: `{"ok": true, "action": "...", "data": {...}, "error": null}`.
 - Use `PARSE_JSON()` to extract fields from the result.
 
+### Output Format
+
+All procedures support an optional third `format` parameter for tabular output:
+
+| Call | Returns |
+|------|---------|
+| `CALL SETUP.GDC_TASK_INFO('list', NULL)` | JSON string |
+| `CALL SETUP.GDC_TASK_INFO('list', NULL, 'table')` | Result set (tabular) |
+
+The JSON format (2-arg) is the default and recommended for programmatic use.
+The table format (3-arg) renders as native columns in Snowsight SQL worksheets.
+
 ## GDC_CONFIG — Application Configuration
 
 Role: APP_ADMIN
