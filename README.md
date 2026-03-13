@@ -13,15 +13,23 @@ These skills work with <a href="https://docs.snowflake.com/en/user-guide/cortex-
 
 ### Cortex Code CLI
 
-```
-/skill add https://github.com/smartdatahub/gdc-snowflake-skills.git
+Run the following command in your **terminal** (not inside the Cortex Code session):
+
+```bash
+cortex skill add "https://github.com/smartdatahub/gdc-snowflake-skills.git"
 ```
 
-To update:
+> **Note:** The `/skill add` slash command inside a Cortex Code session does not support remote URLs. Use the terminal command above instead.
 
-```
-/skill sync
-```
+### Cortex Code in Snowsight
+
+Cortex Code in Snowsight does not support remote skill installation. To add the skill manually:
+
+1. Download [`geo-data-connector/SKILL.md`](geo-data-connector/SKILL.md) from this repository
+2. In Snowsight, open Cortex Code and press `/skill`
+3. Press `a` to add a skill, then upload the downloaded file
+
+The skill is scoped to your current workspace and must be re-added for each workspace.
 
 ### Claude Code
 
@@ -33,7 +41,11 @@ To update:
 
 To track upcoming changes before they reach the stable release:
 
-```
+```bash
+# Cortex Code CLI (terminal)
+cortex skill add "https://github.com/smartdatahub/gdc-snowflake-skills/tree/preview/geo-data-connector"
+
+# Claude Code (session or terminal)
 npx skills add https://github.com/smartdatahub/gdc-snowflake-skills/tree/preview/geo-data-connector
 ```
 
