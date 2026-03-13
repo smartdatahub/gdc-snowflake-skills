@@ -10,11 +10,14 @@ tools:
 
 Geo Data Connector provides five compound SQL procedures for managing geospatial data ingestion programmatically. These procedures are available with the **paid edition** only.
 
-All procedures share the same calling convention:
+All procedures live in the `SETUP` schema of the Geo Data Connector app database. Set the database context first, then call procedures with schema-qualified names:
 
 ```sql
+USE DATABASE <gdc_app_database>;   -- e.g. SDH_GEO_DATA_CONNECTOR
 CALL SETUP.<procedure>('<action>', <params>);
 ```
+
+If the database context is already set (e.g. via Cortex Code session), omit `USE DATABASE`.
 
 - `action` is a STRING identifying the operation.
 - `params` is a VARIANT (JSON object) with action-specific parameters, or NULL when none are needed.
