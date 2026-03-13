@@ -32,8 +32,11 @@ Once the database is set, all procedure calls use `CALL SETUP.<procedure>(...)` 
 ### Calling Convention
 
 ```sql
+USE DATABASE <gdc_app_database>;   -- e.g. SDH_GEO_DATA_CONNECTOR
 CALL SETUP.<procedure>('<action>', <params>);
 ```
+
+If the database context is already set (e.g. via Cortex Code session), omit `USE DATABASE`.
 
 - `action` is a STRING identifying the operation.
 - `params` is a VARIANT (JSON object) with action-specific parameters, or NULL when none are needed.
